@@ -164,6 +164,7 @@ class Transportadora
         return valor;
     }
 
+    /*
     private void valirExistente()
     {
         foreach (var VARIABLE in COLLECTION)
@@ -171,6 +172,7 @@ class Transportadora
             
         }
     }
+    */
     
     
     
