@@ -12,3 +12,4 @@
 /home/csharp/Desktop/sistemaDeTransporte/obj/Debug/net10.0/sistemaDeTransporte.pdb
 /home/csharp/Desktop/sistemaDeTransporte/obj/Debug/net10.0/sistemaDeTransporte.genruntimeconfig.cache
 /home/csharp/Desktop/sistemaDeTransporte/obj/Debug/net10.0/ref/sistemaDeTransporte.dll
+/home/csharp/Desktop/sistemaDeTransporte/obj/Debug/net10.0/sistemaDeTransporte.sourcelink.json

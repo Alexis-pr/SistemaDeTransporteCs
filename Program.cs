@@ -2,6 +2,10 @@
 
 
 using System.Runtime.InteropServices.JavaScript;
+using sistemaDeTransporte.Utils.validators;
+using sistemaDeTransporte.Models;
+
+
 
 bool active = true;
 Transportadora app = new Transportadora();
@@ -35,8 +39,10 @@ while (active)
             app.registrarServicio();
             break;
         case 4:
+            app.asignarRecursos();
             break;
         case 5:
+            
             break;
         case 6:
             
@@ -64,30 +70,31 @@ while (active)
 
 class Transportadora
 {
-    List<dynamic> conductores = new List<dynamic>();
-    List<dynamic> vehiculos = new List<dynamic>();
-    List<dynamic> servicios = new List<dynamic>();
+    List<Conductor> conductores = new List<Conductor>();
+    List<Vehiculo> vehiculos = new List<Vehiculo>();
+    List<Servicio> servicios = new List<Servicio>();
+    
+    Validators validator = new Validators();
     
     public void registrarConductor()
     {
-        Console.WriteLine("Ingrese la identificación dle transportista: ");
-        string id = Console.ReadLine();
+        /*Console.WriteLine("Ingrese la identificación dle transportista: ");*/
+        string id = validator.validarString("ngrese la identificación dle transportista: ");
         
-       Console.WriteLine("Ingrese el nombre de transporte");
-       string nombre = Console.ReadLine();
+       /*Console.WriteLine("Ingrese el nombre de transporte");*/
+       string nombre = validator.validarString("Ingresar Nombre: ");
        
-       Console.WriteLine("Registra la licencia: ");
-       string licencia = Console.ReadLine();
+       /*Console.WriteLine("Registra la licencia: ");*/
+       string licencia = validator.validarString("Registrar la licencia: ");
        
        string estado = "Disponible";
       
-       
        var conductor = new Conductor(id, nombre, licencia,estado);
-       
-       
-       
        conductores.Add(conductor);
-       Console.WriteLine($"Se ha registrado correctamente: {conductor.Id} -- {conductor.FullName} -- {conductor.Licencia} -- {conductor.Estado}  ");
+       
+       Console.WriteLine($@"  
+            Se ha registrado correctamente: {conductor.Id} -- {conductor.FullName} -- {conductor.Licencia} -- {conductor.Estado}
+       ");
        
     }
 
@@ -102,7 +109,7 @@ class Transportadora
         Console.WriteLine("Ingrese el capacidad:");
         int capacidad = int.Parse(Console.ReadLine());
         
-        validarNum(capacidad);
+        validator.validarNum(capacidad);
         
         Console.WriteLine("Ingrese el estado:  (disponible / en servicio / fuera de operación) ");
         string estado = Console.ReadLine();
@@ -126,7 +133,7 @@ class Transportadora
         
         Console.WriteLine("Ingrese la Distancia del viaje:");
         int distancia = int.Parse(Console.ReadLine());
-        validarNum(distancia);
+        validator.validarNum(distancia);
         
         Console.WriteLine("Ingrese el estado:");
         string estado = Console.ReadLine();
@@ -140,100 +147,123 @@ class Transportadora
         Console.WriteLine($"se ha registrado el valor de forma correcta {services.Id} -- {services.Origen} -- {services.Destino} -- {services.Distancia} -- {services.Estado} -- {services.Coste} ");
         
     }
-
-    public int validarNum(int a)
+    
+        public void asignarRecursos()
     {
-        while (a < 0)
+        // 1. Pedir el ID del servicio
+        Console.WriteLine("Ingrese el ID del servicio:");
+        string idServicio = Console.ReadLine();
+
+        // 2. Buscar el servicio en la lista
+        Servicio servicio = null;
+        foreach (var s in servicios)
         {
-            Console.WriteLine("El valor debe ser mayor a cero");
-            a = int.Parse(Console.ReadLine());
+            if (s.Id == idServicio)
+            {
+                servicio = s;
+                break;
+            }
         }
-        return a;
-    }
 
-    private string validarString(string a)
-    {
-        string valor;
-        do
+        // 3. ¿Existe?
+        if (servicio == null)
         {
-            Console.WriteLine("Ingrese el valor:");
-            valor = Console.ReadLine();
-            if (string.IsNullOrEmpty(valor))
-                Console.WriteLine("El valor es obligatorio");
-        } while (string.IsNullOrWhiteSpace(valor));
-        return valor;
-    }
-
-    /*
-    private void valirExistente()
-    {
-        foreach (var VARIABLE in COLLECTION)
-        {
-            
+            Console.WriteLine("Servicio no encontrado.");
+            return; // sale del método
         }
+
+        // 4. ¿Ya tiene asignación? (restricción de duplicados)
+        if (servicio.ConductorAsignado != null || servicio.VehiculoAsignado != null)
+        {
+            Console.WriteLine("Este servicio ya tiene recursos asignados.");
+            return;
+        }
+
+        // 5. Mostrar solo conductores disponibles
+        Console.WriteLine("Conductores disponibles:");
+        foreach (var c in conductores)
+        {
+            if (c.Estado == "Disponible")
+            {
+                Console.WriteLine($"  {c.Id} -- {c.FullName}");
+            }
+        }
+
+        // 6. El usuario elige un conductor por ID
+        Console.WriteLine("Ingrese el ID del conductor:");
+        string idConductor = Console.ReadLine();
+
+        Conductor conductor = null;
+        foreach (var c in conductores)
+        {
+            if (c.Id == idConductor && c.Estado == "Disponible")
+            {
+                conductor = c;
+                break;
+            }
+        }
+
+        if (conductor == null)
+        {
+            Console.WriteLine("Conductor no encontrado o no disponible.");
+            return;
+        }
+
+        // 7. Mostrar solo vehículos disponibles
+        Console.WriteLine("Vehículos disponibles:");
+        foreach (var v in vehiculos)
+        {
+            if (v.Estado == "Disponible")
+            {
+                Console.WriteLine($"  {v.Placa} -- {v.Tipo}");
+            }
+        }
+
+        // 8. El usuario elige un vehículo por placa
+        
+        Console.WriteLine("Ingrese la placa del vehículo:");
+        string placa = Console.ReadLine();
+
+        Vehiculo vehiculo = null;
+        foreach (var v in vehiculos)
+        {
+            if (v.Placa == placa && v.Estado == "Disponible")
+            {
+                vehiculo = v;
+                break;
+            }
+        }
+
+        if (vehiculo == null)
+        {
+            Console.WriteLine("Vehículo no encontrado o no disponible.");
+            return;
+        }
+
+        // 9. Hacer la asignación
+        servicio.ConductorAsignado = conductor;
+        servicio.VehiculoAsignado = vehiculo;
+
+        // 10. Cambiar los estados
+        conductor.Estado = "En servicio";
+       
+        servicio.Estado = "Asignado";
+
+        Console.WriteLine($"Asignación exitosa: Conductor {conductor.FullName} y vehículo {vehiculo.Placa} asignados al servicio {servicio.Id}");
     }
-    */
-    
-    
-    
-}
-
-    
 
 
-public class Conductor
-{
-    public   string Id { get; set; }
-    public  string FullName { get; set; }
-    public  string Licencia { get; set; }
-    public  string Estado { get; set; }
-    
-    public Conductor(string id, string fullName, string licencia, string estado)
+    public void iniciarServicio()
     {
-        Id = id;
-        FullName = fullName;
-        Licencia = licencia;
-        Estado = estado;
+        
     }
-    
+
+   
+  
+ 
     
 }
 
-public class Vehiculo
-{
     
-    public  string Placa { get; set; }
-    public  string Tipo { get; set; } 
-    public  int Capacidad { get; set; }
-    public string Estado { get; set; }
 
-    public Vehiculo(string placa, string tipo, int capacidad, string estado)
-    {
-        Placa = placa;
-        Tipo = tipo;
-        Capacidad = capacidad;
-        Estado = estado;
-    }
-    
-}
-
-public class Servicio
-{
-    public  string Id { get; set; }
-    public  string Origen { get; set; }
-    public string  Destino { get; set; }
-    public  int Distancia { get; set; }
-    public  string Estado { get; set; }
-    public int Coste { get; set; }
-
-    public Servicio(string id, string origen, string destino, int distancia, string estado, int coste)
-    {
-        Id = id;
-        Origen = origen;
-        Destino = destino;
-        Distancia = distancia;
-        Estado = estado;
-        Coste = coste;
-    }
-}
 
