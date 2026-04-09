@@ -1,80 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
+namespace sistemaDeTransporte.Services;
 
 
-using System.Runtime.InteropServices.JavaScript;
+using  sistemaDeTransporte.Models;
 using sistemaDeTransporte.Utils.validators;
-using sistemaDeTransporte.Models;
-using sistemaDeTransporte.Services;
 
 
 
-bool active = true;
-Transportadora app = new Transportadora();
-
-while (active)
+public class Transportadora
 {
-    
-    Console.WriteLine(@$"Seleccione la opción deseada:
-       1. Registrar conductor
-       2. Registrar vehículo
-       3. Registrar servicio de transporte
-       4. Asignar conductor y vehículo a servicio
-       5. Iniciar servicio
-       6. Finalizar servicio
-       7. Consultar servicios
-       8. Consultar conductores y vehículos
-       9. Reportes operativos
-      10. Salir
-     ");
-    int option = int.Parse(Console.ReadLine());
-    
-    switch (option)
-    {
-        case 1:
-            app.registrarConductor();
-            break;
-        case 2:
-            app.registrarVehiculo();
-            break;
-        case 3:
-            app.registrarServicio();
-            break;
-        case 4:
-            app.asignarRecursos();
-            break;
-        case 5:
-            app.iniciarServicio();
-            break;
-        case 6:
-            app.finalizarServicio();
-            break;
-        case 7:
-            app.consultarServicios();
-            break;
-        case 8:
-            app.consultarRecursos();
-            break;
-        case 9:
-            
-            app.reportesOperativos();
-            break;
-        case 10:
-            active = false;
-            break;
-        default:
-            Console.WriteLine("Invalid option");
-          break;  
-            
-    }
-}
 
 
-
-
-
-/*
-class Transportadora
-{
     List<Conductor> conductores = new List<Conductor>();
     List<Vehiculo> vehiculos = new List<Vehiculo>();
     List<Servicio> servicios = new List<Servicio>();
@@ -83,13 +18,13 @@ class Transportadora
     
     public void registrarConductor()
     {
-        /*Console.WriteLine("Ingrese la identificación dle transportista: ");#1#
+        /*Console.WriteLine("Ingrese la identificación dle transportista: ");*/
         string id = validator.validarString("ngrese la identificación dle transportista: ");
         
-       /*Console.WriteLine("Ingrese el nombre de transporte");#1#
+       /*Console.WriteLine("Ingrese el nombre de transporte");*/
        string nombre = validator.validarString("Ingresar Nombre: ");
        
-       /*Console.WriteLine("Registra la licencia: ");#1#
+       /*Console.WriteLine("Registra la licencia: ");*/
        string licencia = validator.validarString("Registrar la licencia: ");
        
        string estado = "Disponible";
@@ -155,6 +90,10 @@ class Transportadora
     // ----------------------------------------------///
     public void asignarRecursos()
     {
+        foreach (var s in servicios)
+        {
+            if (s.Estado == "Disponible") Console.WriteLine($"  {s.Id}");
+        }
         // Parte 1
         Console.WriteLine("Ingrese el ID del servicio:");
         string idServicio = Console.ReadLine();
@@ -453,9 +392,6 @@ class Transportadora
     }
     
     
-}*/
-
-   
-    
 
 
+}

@@ -1,5 +1,7 @@
 namespace sistemaDeTransporte.Models;
 
+
+
 public class Conductor
 {
  
